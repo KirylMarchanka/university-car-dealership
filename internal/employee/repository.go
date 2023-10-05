@@ -26,7 +26,7 @@ func store(name, email, password string, date time.Time) int64 {
 		return 0
 	}
 
-	id, err := res.LastInsertId()
+	id, _ := res.LastInsertId()
 
 	return id
 }
