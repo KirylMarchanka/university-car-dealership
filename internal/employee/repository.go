@@ -31,6 +31,26 @@ func store(name, email, password string, date time.Time) int64 {
 	return id
 }
 
+func findByEmail(email string) *Employee {
+	db := connect()
+	defer db.Close()
+
+	var empl Employee
+
+	err := db.QueryRow("SELECT * FROM employees WHERE email = ?", email).Scan(
+		&empl.Id, &empl.Name, &empl.Email, &empl.Password,
+	)
+	if err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			log.Printf("Unable to get Employee by email, err: [%s]\n", err.Error())
+		}
+
+		return nil
+	}
+
+	return &empl
+}
+
 func existsByEmail(email string) bool {
 	db := connect()
 	defer db.Close()
