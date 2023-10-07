@@ -22,12 +22,14 @@ func Define(r *mux.Router) {
 	authRouter.HandleFunc("/cars", handlers.CreateCar).Methods("POST")
 	authRouter.HandleFunc("/cars/{id:[0-9]+}", handlers.UpdateCar).Methods("PUT")
 	authRouter.HandleFunc("/cars/{id:[0-9]+}", handlers.DeleteCar).Methods("DELETE")
+	authRouter.HandleFunc("/manufacturers", handlers.CreateManufacturer).Methods("POST")
 	authRouter.HandleFunc("/profile", handlers.GetProfile).Methods("GET")
 
 	// Define routes outside the sub-router (without middleware)
 	r.HandleFunc("/login", handlers.Login).Methods("POST")
 	r.HandleFunc("/cars", handlers.GetCars).Methods("GET")
 	r.HandleFunc("/cars/{id:[0-9]+}", handlers.GetCar).Methods("GET")
+	r.HandleFunc("/manufacturers", handlers.GetManufacturers).Methods("GET")
 
 	// Merge the sub-router with the main router
 	r.PathPrefix("/auth").Handler(http.StripPrefix("/auth", authRouter))

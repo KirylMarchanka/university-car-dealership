@@ -3,8 +3,8 @@ package manufacturer
 import "errors"
 
 type Manufacturer struct {
-	Id   int64
-	Name string
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
 }
 
 func Validate(name string) error {
@@ -29,6 +29,10 @@ func New(name string) *Manufacturer {
 		Id:   id,
 		Name: name,
 	}
+}
+
+func Get() ([]Manufacturer, error) {
+	return get()
 }
 
 func GetById(id int64) Manufacturer {

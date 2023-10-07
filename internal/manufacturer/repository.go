@@ -79,6 +79,29 @@ func ExistsById(id int64) bool {
 	return true
 }
 
+func get() ([]Manufacturer, error) {
+	db := connect()
+	defer db.Close()
+
+	rows, err := db.Query("SELECT id, name FROM manufacturers")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var manufacturers []Manufacturer
+
+	for rows.Next() {
+		var manufacturer Manufacturer
+		if err := rows.Scan(&manufacturer.Id, &manufacturer.Name); err != nil {
+			return nil, err
+		}
+		manufacturers = append(manufacturers, manufacturer)
+	}
+
+	return manufacturers, nil
+}
+
 func connect() (db *sql.DB) {
 	dbDriver := "mysql"
 	dbUser := "car-dealership"
