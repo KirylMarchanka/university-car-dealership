@@ -216,6 +216,27 @@ func getWithSales(id int64) (*EmployeeSales, error) {
 	return &employeeSale, nil
 }
 
+func storeSale(employeeId, carId, price int64, date string) bool {
+	db := connect()
+	defer db.Close()
+
+	query := `INSERT INTO sales (employee_id, car_id, price, sale_date) VALUES (?, ?, ?, ?)`
+
+	ins, err := db.Prepare(query)
+	if err != nil {
+		log.Printf("Unable to insert Sale, err: [%s]\n", err.Error())
+		return false
+	}
+
+	_, err = ins.Exec(employeeId, carId, price, date)
+	if err != nil {
+		log.Printf("Unable to insert Sale, err: [%s]\n", err.Error())
+		return false
+	}
+
+	return true
+}
+
 // Helper function to generate filter conditions based on provided values
 func generateFilterClause(column, condition, value string, hasWhere bool) string {
 	var query string

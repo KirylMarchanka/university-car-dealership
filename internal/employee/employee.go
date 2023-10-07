@@ -112,3 +112,7 @@ func Delete(id int64) bool {
 
 	return true
 }
+
+func (e *Employee) Sale(carId, price int64, date string) bool {
+	return storeSale(e.Id, carId, price, date)
+}

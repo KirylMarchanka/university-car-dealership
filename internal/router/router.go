@@ -30,6 +30,8 @@ func Define(r *mux.Router) {
 	authRouter.HandleFunc("/employees/{id:[0-9]+}", handlers.GetEmployee).Methods("GET")
 	authRouter.HandleFunc("/employees/{id:[0-9]+}", handlers.DeleteEmployee).Methods("DELETE")
 
+	authRouter.HandleFunc("/employees/sale", handlers.CreateNewSale).Methods("POST")
+
 	authRouter.HandleFunc("/profile", handlers.GetProfile).Methods("GET")
 
 	// Define routes outside the sub-router (without middleware)
