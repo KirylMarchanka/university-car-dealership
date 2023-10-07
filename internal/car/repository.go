@@ -92,9 +92,14 @@ func carExists(id int64) bool {
 	return true
 }
 
-func selectCars(manufacturerID int, name, fuel, orderBy, orderDirection string) ([]Car, error) {
+func selectCars(manufacturerID int64, name, fuel, orderBy, orderDirection string) ([]Car, error) {
 	// Construct the base SELECT query.
-	selectSQL := "SELECT * FROM cars WHERE 1=1"
+	selectSQL := `
+		SELECT c.id, c.manufacturer_id, c.name, c.fuel, c.fuel_capacity, c.engine, c.engine_power, c.engine_capacity, c.max_speed, c.acceleration, m.id, m.name AS manufacturer_name
+		FROM cars c
+		LEFT JOIN manufacturers m ON c.manufacturer_id = m.id
+		WHERE 1=1
+	`
 
 	// Add filters based on provided criteria.
 	var args []interface{}
@@ -117,7 +122,7 @@ func selectCars(manufacturerID int, name, fuel, orderBy, orderDirection string) 
 
 	// Add ordering criteria.
 	orderBy = strings.ToLower(orderBy)
-	if orderBy == "maxspeed" || orderBy == "acceleration" {
+	if orderBy == "max_speed" || orderBy == "acceleration" {
 		selectSQL += " ORDER BY " + orderBy
 		if orderDirection == "desc" {
 			selectSQL += " DESC"
@@ -135,14 +140,46 @@ func selectCars(manufacturerID int, name, fuel, orderBy, orderDirection string) 
 	var cars []Car
 	for rows.Next() {
 		var car Car
-		err := rows.Scan(&car.Id, &car.ManufacturerId, &car.Name, &car.Fuel, &car.FuelCapacity, &car.Engine, &car.EnginePower, &car.EngineCapacity, &car.MaxSpeed, &car.Acceleration)
+		err := rows.Scan(
+			&car.Id, &car.ManufacturerId, &car.Name, &car.Fuel, &car.FuelCapacity, &car.Engine, &car.EnginePower,
+			&car.EngineCapacity, &car.MaxSpeed, &car.Acceleration, &car.Manufacturer.Id, &car.Manufacturer.Name,
+		)
 		if err != nil {
 			return nil, err
 		}
+
 		cars = append(cars, car)
 	}
 
 	return cars, nil
+}
+
+func findById(id int64) (Car, error) {
+	selectSQL := `
+		SELECT c.id, c.manufacturer_id, c.name, c.fuel, c.fuel_capacity, c.engine, c.engine_power, c.engine_capacity, c.max_speed, c.acceleration, m.id, m.name AS manufacturer_name
+		FROM cars c
+		LEFT JOIN manufacturers m ON c.manufacturer_id = m.id
+		WHERE c.id = ?
+	`
+
+	db := connect()
+	defer db.Close()
+
+	var car Car
+
+	err := db.QueryRow(selectSQL, id).Scan(
+		&car.Id, &car.ManufacturerId, &car.Name, &car.Fuel, &car.FuelCapacity, &car.Engine, &car.EnginePower,
+		&car.EngineCapacity, &car.MaxSpeed, &car.Acceleration, &car.Manufacturer.Id, &car.Manufacturer.Name,
+	)
+	if err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			log.Printf("Unable to get Car by id, err: [%s]\n", err.Error())
+		}
+
+		return Car{}, err
+	}
+
+	return car, nil
 }
 
 func connect() (db *sql.DB) {

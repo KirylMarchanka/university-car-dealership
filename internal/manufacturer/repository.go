@@ -29,6 +29,24 @@ func store(name string) int64 {
 	return id
 }
 
+func getById(id int64) (int64, string, error) {
+	db := connect()
+	defer db.Close()
+
+	var name string
+
+	err := db.QueryRow("SELECT * FROM manufacturers WHERE id = ?", id).Scan(&id, &name)
+	if err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			log.Printf("Unable to get Manufacturer by ID, err: [%s]\n", err.Error())
+		}
+
+		return 0, "", err
+	}
+
+	return id, name, nil
+}
+
 func existsByName(name string) bool {
 	db := connect()
 	defer db.Close()
@@ -49,7 +67,7 @@ func ExistsById(id int64) bool {
 	db := connect()
 	defer db.Close()
 
-	err := db.QueryRow("SELECT (1) FROM manufacturers WHERE id = ?", id).Scan(&id)
+	err := db.QueryRow("SELECT id FROM manufacturers WHERE id = ?", id).Scan(&id)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
 			log.Printf("Unable to get Manufacturer by ID, err: [%s]\n", err.Error())

@@ -1,19 +1,15 @@
 package main
 
 import (
-	"car_dealership/internal/employee"
-	"fmt"
+	"car_dealership/internal/router"
+	"github.com/gorilla/mux"
+	"log"
+	"net/http"
 )
 
 func main() {
-	err := employee.Validate("John Doe", "jd@gmail.com", "test321")
-	if err != nil {
-		fmt.Printf("Failed to validate Employee, err: %s", err.Error())
+	r := mux.NewRouter()
+	router.Define(r)
 
-		return
-	}
-
-	empl := employee.New("John Doe", "jd@gmail.com", "test321")
-
-	fmt.Println(empl)
+	log.Fatal(http.ListenAndServe(":8080", r))
 }

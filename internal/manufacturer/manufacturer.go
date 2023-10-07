@@ -30,3 +30,18 @@ func New(name string) *Manufacturer {
 		Name: name,
 	}
 }
+
+func GetById(id int64) Manufacturer {
+	id, name, err := getById(id)
+	if err != nil {
+		return Manufacturer{
+			Id:   0,
+			Name: "",
+		}
+	}
+
+	return Manufacturer{
+		Id:   id,
+		Name: name,
+	}
+}

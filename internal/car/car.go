@@ -6,16 +6,17 @@ import (
 )
 
 type Car struct {
-	Id             int64
-	ManufacturerId int64
-	Name           string
-	Fuel           string
-	FuelCapacity   float32
-	Engine         string
-	EnginePower    float32
-	EngineCapacity float32
-	MaxSpeed       int32
-	Acceleration   float32
+	Id             int64                     `json:"id"`
+	ManufacturerId int64                     `json:"manufacturer_id"`
+	Name           string                    `json:"name"`
+	Fuel           string                    `json:"fuel"`
+	FuelCapacity   float32                   `json:"fuel_capacity"`
+	Engine         string                    `json:"engine"`
+	EnginePower    float32                   `json:"engine_power"`
+	EngineCapacity float32                   `json:"engine_capacity"`
+	MaxSpeed       int32                     `json:"max_speed"`
+	Acceleration   float32                   `json:"acceleration"`
+	Manufacturer   manufacturer.Manufacturer `json:"manufacturer"`
 }
 
 func Validate(
@@ -99,6 +100,7 @@ func New(
 		EngineCapacity: engineCapacity,
 		MaxSpeed:       maxSpeed,
 		Acceleration:   acceleration,
+		Manufacturer:   manufacturer.GetById(manufacturerId),
 	}
 }
 
@@ -120,6 +122,10 @@ func Delete(car *Car) error {
 	return nil
 }
 
-func SelectCars(manufacturerID int, name, fuel, orderBy, orderDirection string) ([]Car, error) {
+func SelectCars(manufacturerID int64, name, fuel, orderBy, orderDirection string) ([]Car, error) {
 	return selectCars(manufacturerID, name, fuel, orderBy, orderDirection)
+}
+
+func Find(id int64) (Car, error) {
+	return findById(id)
 }
