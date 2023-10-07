@@ -45,6 +45,22 @@ func existsByName(name string) bool {
 	return true
 }
 
+func ExistsById(id int64) bool {
+	db := connect()
+	defer db.Close()
+
+	err := db.QueryRow("SELECT (1) FROM manufacturers WHERE id = ?", id).Scan(&id)
+	if err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			log.Printf("Unable to get Manufacturer by ID, err: [%s]\n", err.Error())
+		}
+
+		return false
+	}
+
+	return true
+}
+
 func connect() (db *sql.DB) {
 	dbDriver := "mysql"
 	dbUser := "car-dealership"
