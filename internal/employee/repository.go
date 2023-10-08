@@ -216,11 +216,11 @@ func getWithSales(id int64) (*EmployeeSales, error) {
 	return &employeeSale, nil
 }
 
-func storeSale(employeeId, carId, price int64, date string) bool {
+func storeSale(employeeId, orderId, carId, price int64, date string) bool {
 	db := connect()
 	defer db.Close()
 
-	query := `INSERT INTO sales (employee_id, car_id, price, sale_date) VALUES (?, ?, ?, ?)`
+	query := `INSERT INTO sales (employee_id, order_id, car_id, price, sale_date) VALUES (?, ?, ?, ?, ?)`
 
 	ins, err := db.Prepare(query)
 	if err != nil {
@@ -228,7 +228,7 @@ func storeSale(employeeId, carId, price int64, date string) bool {
 		return false
 	}
 
-	_, err = ins.Exec(employeeId, carId, price, date)
+	_, err = ins.Exec(employeeId, orderId, carId, price, date)
 	if err != nil {
 		log.Printf("Unable to insert Sale, err: [%s]\n", err.Error())
 		return false
