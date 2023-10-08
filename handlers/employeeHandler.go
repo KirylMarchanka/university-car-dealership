@@ -135,8 +135,8 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 		Name  string `json:"name"`
 	}{
 		Id:    newEmployee.Id,
-		Email: newEmployee.Name,
-		Name:  newEmployee.Email,
+		Email: newEmployee.Email,
+		Name:  newEmployee.Name,
 	})
 }
 
